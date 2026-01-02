@@ -14,8 +14,8 @@ export class AppController {
         
         this.captureMode = 'snip'; 
         this.isGenerating = false; 
-        this.pageContextActive = false;
-        this.browserControlActive = false;
+        this.pageContextActive = true;
+        this.browserControlActive = true;
         
         // Sidebar Restore Behavior: 'auto', 'restore', 'new'
         this.sidebarRestoreBehavior = 'auto';
@@ -31,6 +31,39 @@ export class AppController {
         // Initialize Sub-Controllers
         this.sessionFlow = new SessionFlowController(sessionManager, uiController, this);
         this.prompt = new PromptController(sessionManager, uiController, imageManager, this);
+        
+        // Initialize UI state to match default browser control setting
+        this._initializeUIState();
+    }
+    
+    _initializeUIState() {
+        // Set browser control button state to match internal state
+        const browserBtn = document.getElementById('browser-control-btn');
+        if (browserBtn) {
+            browserBtn.classList.toggle('active', this.browserControlActive);
+        }
+        
+        // Set page context button state to match internal state
+        const pageContextBtn = document.getElementById('page-context-btn');
+        if (pageContextBtn) {
+            pageContextBtn.classList.toggle('active', this.pageContextActive);
+        }
+        
+        // Show/Hide the tab switcher in header based on browser control state
+        this.ui.toggleTabSwitcher(this.browserControlActive);
+        
+        // If browser control is active, signal background to start debugger session
+        if (this.browserControlActive) {
+            sendToBackground({ 
+                action: "TOGGLE_BROWSER_CONTROL", 
+                enabled: true 
+            });
+        }
+        
+        // If page context is active, check and read page content
+        if (this.pageContextActive) {
+            this._checkPageContent();
+        }
     }
 
     setCaptureMode(mode) {
