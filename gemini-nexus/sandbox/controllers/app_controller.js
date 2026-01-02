@@ -15,7 +15,7 @@ export class AppController {
         this.captureMode = 'snip'; 
         this.isGenerating = false; 
         this.pageContextActive = true;
-        this.browserControlActive = true;
+        this.browserControlActive = false;
         
         // Sidebar Restore Behavior: 'auto', 'restore', 'new'
         this.sidebarRestoreBehavior = 'auto';
